@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/md5"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,11 +13,17 @@ import (
 func main() {
 
 	var wg sync.WaitGroup //使用等待组对所有gproutines进行管理
+	var root string
+	var compare bool
 	var allPaths []string //储存可读取的文件路径
 
-	dir := "E:/ASproject" //读取的根目录
+	flag.StringVar(&root, "d", ".", "搜索目录")
+	flag.BoolVar(&compare, "c", false, "是否对串行和并行进行比较(true or false)")
+	//dir := "E:/ASproject" //读取的根目录
+	flag.Parse()
+	flag.Usage()
 
-	findDir(dir, &allPaths) //递归遍历文件夹下有读取权限的所有文件
+	findDir(root, &allPaths) //递归遍历文件夹下有读取权限的所有文件
 
 	start := time.Now()
 	for _, file := range allPaths { //每个文件进行计算md5的值
@@ -24,19 +31,24 @@ func main() {
 		wg.Add(1)
 		go read(file, &wg)
 	}
+
 	wg.Wait()
 	parallel := time.Since(start).Seconds()
 
-	start = time.Now()
-	for _, file := range allPaths { //每个文件进行计算md5的值
+	if !compare {
+		fmt.Println("并行运行时间为", parallel)
+	} else {
+		start = time.Now()
+		for _, file := range allPaths { //每个文件进行计算md5的值
 
-		sread(file)
+			sread(file)
+		}
+
+		serial := time.Since(start).Seconds()
+
+		fmt.Println("并行运行时间为", parallel)
+		fmt.Println("串行运行时间为", serial)
 	}
-
-	serial := time.Since(start).Seconds()
-
-	fmt.Println("并行运行时间为", parallel)
-	fmt.Println("串行运行时间为", serial)
 }
 
 func read(name string, wg *sync.WaitGroup) { //对文件进行读取的goroutine原型
