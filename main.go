@@ -17,7 +17,8 @@ func main() {
 	var compare bool      //是否进行对比的标志
 	var allPaths []string //储存可读取的文件路径
 
-	goproject_test.main()
+	test.Hello()
+
 	flag.StringVar(&root, "d", ".", "搜索目录")
 	flag.BoolVar(&compare, "c", false, "是否对串行和并行进行比较(true or false)")
 	//dir := "E:/ASproject" //读取的根目录
