@@ -13,8 +13,8 @@ import (
 func main() {
 
 	var wg sync.WaitGroup //使用等待组对所有gproutines进行管理
-	var root string
-	var compare bool
+	var root string       //读取的根目录
+	var compare bool      //是否进行对比的标志
 	var allPaths []string //储存可读取的文件路径
 
 	flag.StringVar(&root, "d", ".", "搜索目录")
